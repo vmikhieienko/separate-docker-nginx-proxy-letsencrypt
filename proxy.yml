@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: jwilder/nginx-proxy:0.8.0
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - proxy-tier
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion:2.0
+    restart: unless-stopped
+    volumes_from:
+      - nginx
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - nginx
+    networks:
+      - proxy-tier
+
+networks:
+  proxy-tier:
+    driver: bridge
+    name: nginx-proxy
+
+volumes:
+  dhparam:
+  certs:
+  html:
