@@ -1,7 +1,6 @@
 # Separate Docker setup for Nginx + Letsencrypt
 
 Allows to have multiple `docker-compose` projects running on one machine.
-(Untested)
 
 To run the setup follow these steps:
 
